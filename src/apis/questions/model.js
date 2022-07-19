@@ -9,7 +9,8 @@ const questionsSchema = new Schema(
       heading: { type: String, required: true },
       image: { type: String },
       question: { type: String, required: true }
-    }
+    },
+    likes: { type: Number, default: 0 }
   },
   { timestamps: true }
 )

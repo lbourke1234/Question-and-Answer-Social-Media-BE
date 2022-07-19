@@ -2,6 +2,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import usersRouter from './apis/users/index.js'
 import questionsRouter from './apis/questions/index.js'
+import authRouter from './apis/auth/index.js'
 import cors from 'cors'
 import listEndpoints from 'express-list-endpoints'
 import {
@@ -21,6 +22,7 @@ server.use(express.json())
 
 server.use('/users', usersRouter)
 server.use('/questions', questionsRouter)
+server.use('/auth', authRouter)
 
 server.use(badRequestHandler)
 server.use(forbiddenHandler)

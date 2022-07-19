@@ -1,5 +1,5 @@
 import createHttpError from 'http-errors'
-import { verifyJwtToken } from './tools'
+import { verifyJwtToken } from './tools.js'
 
 export const JwtAuthMiddleware = async (req, res, next) => {
   if (!req.headers.authorization) {

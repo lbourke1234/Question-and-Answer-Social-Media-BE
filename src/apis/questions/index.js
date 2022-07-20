@@ -66,4 +66,38 @@ router.delete('/:id', async (req, res, next) => {
   }
 })
 
+router.post('/:id/like', async (req, res, next) => {
+  try {
+    const post = await QuestionsModel.findById(req.params.id)
+    if (!post) {
+      next(createHttpError(404, 'Post not found!'))
+    } else {
+      post.likes++
+      post.save()
+
+      res.send(post)
+    }
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+})
+
+router.post('/:id/unlike', async (req, res, next) => {
+  try {
+    const post = await QuestionsModel.findById(req.params.id)
+    if (!post) {
+      next(createHttpError(404, 'Post not found!'))
+    } else {
+      post.likes--
+      post.save()
+
+      res.send(post)
+    }
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+})
+
 export default router

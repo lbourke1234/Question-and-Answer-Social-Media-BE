@@ -78,8 +78,11 @@ router.post('/:id/like', JwtAuthMiddleware, async (req, res, next) => {
         (user) => user.toString() === req.user._id
       )
       if (!doesUserLikePost) {
+        console.log('post.author.toString()', post.author.toString())
         const postAuthor = await UsersModel.findById(post.author.toString())
-        postAuthor.kudos = postAuthor.kudos++
+        console.log('post author', postAuthor)
+        console.log('post', post)
+        postAuthor.kudos++
         await postAuthor.save()
         console.log('post author', postAuthor)
 
@@ -106,6 +109,10 @@ router.post('/:id/unlike', JwtAuthMiddleware, async (req, res, next) => {
     } else {
       const userLikesPost = post.likeList.find((user) => user.toString() === req.user._id)
       if (userLikesPost) {
+        const postAuthor = await UsersModel.findById(post.author.toString())
+        postAuthor.kudos--
+        await postAuthor.save()
+
         const index = post.likeList.findIndex((user) => user.toString() === req.user._id)
         post.likeList.splice(index, 1)
         post.likes--

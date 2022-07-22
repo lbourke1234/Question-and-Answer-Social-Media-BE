@@ -8,7 +8,15 @@ const router = express.Router()
 
 router.get('/', async (req, res, next) => {
   try {
-    const questions = await QuestionsModel.find()
+    const questions = await QuestionsModel.find().populate({
+      path: 'author'
+    })
+    console.log('before sort', questions)
+
+    questions.sort(function (a, b) {
+      return b.likes - a.likes
+    })
+    console.log('after sort', questions)
     res.send(questions)
   } catch (error) {
     console.log(error)
@@ -17,7 +25,9 @@ router.get('/', async (req, res, next) => {
 })
 router.get('/:id', async (req, res, next) => {
   try {
-    const question = await QuestionsModel.findById(req.params.id)
+    const question = await QuestionsModel.findById(req.params.id).populate({
+      path: 'author'
+    })
     if (!question) {
       next(createHttpError(404, 'Post not found!'))
     } else {

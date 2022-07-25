@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { query } from 'express'
 import QuestionsModel from './model.js'
 import UsersModel from '../users/model.js'
 import createHttpError from 'http-errors'
@@ -11,18 +11,30 @@ router.get('/', async (req, res, next) => {
     const questions = await QuestionsModel.find().populate({
       path: 'author'
     })
-    console.log('before sort', questions)
-
     questions.sort(function (a, b) {
       return b.likes - a.likes
     })
-    console.log('after sort', questions)
     res.send(questions)
   } catch (error) {
     console.log(error)
     next(error)
   }
 })
+
+router.get('/categories/:name', async (req, res, next) => {
+  try {
+    const questions = await QuestionsModel.find({ category: req.params.name })
+    if (questions.length === 0) {
+      next(createHttpError(404, 'Category might not exist'))
+    } else {
+      res.send(questions)
+    }
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+})
+
 router.get('/:id', async (req, res, next) => {
   try {
     const question = await QuestionsModel.findById(req.params.id).populate({

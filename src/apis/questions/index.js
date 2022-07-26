@@ -23,7 +23,9 @@ router.get('/', async (req, res, next) => {
 
 router.get('/categories/:name', async (req, res, next) => {
   try {
-    const questions = await QuestionsModel.find({ category: req.params.name })
+    const questions = await QuestionsModel.find({ category: req.params.name }).populate({
+      path: 'author'
+    })
     if (questions.length === 0) {
       next(createHttpError(404, 'Category might not exist'))
     } else {

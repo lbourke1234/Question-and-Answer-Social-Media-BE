@@ -6,13 +6,27 @@ import { JwtAuthMiddleware } from '../../auth/token.js'
 
 const router = express.Router()
 
-router.get('/', async (req, res, next) => {
+router.get('/likes', async (req, res, next) => {
   try {
     const questions = await QuestionsModel.find().populate({
       path: 'author'
     })
     questions.sort(function (a, b) {
       return b.likes - a.likes
+    })
+    res.send(questions)
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+})
+router.get('/date', async (req, res, next) => {
+  try {
+    const questions = await QuestionsModel.find().populate({
+      path: 'author'
+    })
+    questions.sort(function (a, b) {
+      return b.createdAt - a.createdAt
     })
     res.send(questions)
   } catch (error) {
@@ -102,13 +116,9 @@ router.post('/:id/like', JwtAuthMiddleware, async (req, res, next) => {
         (user) => user.toString() === req.user._id
       )
       if (!doesUserLikePost) {
-        console.log('post.author.toString()', post.author.toString())
         const postAuthor = await UsersModel.findById(post.author.toString())
-        console.log('post author', postAuthor)
-        console.log('post', post)
         postAuthor.kudos++
         await postAuthor.save()
-        console.log('post author', postAuthor)
 
         post.likeList.push(req.user._id)
         post.likes++

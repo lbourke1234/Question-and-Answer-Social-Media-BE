@@ -14,13 +14,29 @@ router.get('/', async (req, res, next) => {
     next(error)
   }
 })
-router.get('/:id', async (req, res, next) => {
+router.get('/post/:id', async (req, res, next) => {
   try {
     const comments = await CommentsModel.find({ post: req.params.id })
     if (!comments) {
       next(createHttpError(404, 'Post does not exist!'))
     } else {
+      comments.sort(function (a, b) {
+        return b.likes - a.likes
+      })
       res.send(comments)
+    }
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+})
+router.get('/:commentId', async (req, res, next) => {
+  try {
+    const comment = await CommentsModel.findById(req.params.commentId)
+    if (!comment) {
+      next(createHttpError(404, 'Comment not found!'))
+    } else {
+      res.send(comment)
     }
   } catch (error) {
     console.log(error)
@@ -46,14 +62,13 @@ router.post('/like/:id', JwtAuthMiddleware, async (req, res, next) => {
       const doesUserLikeComment = comment.likesList.find(
         (c) => c.toString() === req.user._id
       )
-      console.log('does user like comment', doesUserLikeComment)
       if (!doesUserLikeComment) {
         comment.likes++
         comment.likesList.push(req.user._id)
         await comment.save()
-        res.send({ message: 'User now likes post' })
+        res.send(comment)
       } else {
-        res.send({ message: 'User already likes post' })
+        res.send(comment)
       }
     }
   } catch (error) {
@@ -77,9 +92,9 @@ router.post('/dislike/:id', JwtAuthMiddleware, async (req, res, next) => {
         comment.likesList.splice(indexToRemove, 1)
 
         await comment.save()
-        res.send({ message: 'User unliked post' })
+        res.send(comment)
       } else {
-        res.send({ message: 'User does not like post yet!' })
+        res.send(comment)
       }
     }
   } catch (error) {

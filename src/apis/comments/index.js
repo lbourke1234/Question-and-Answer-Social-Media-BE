@@ -102,4 +102,21 @@ router.post('/dislike/:id', JwtAuthMiddleware, async (req, res, next) => {
     next(error)
   }
 })
+router.put('/:id', async (req, res, next) => {
+  try {
+    const editedComment = await CommentsModel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    })
+    if (!editedComment) {
+      next(createHttpError(404, 'Comment not found!'))
+    } else {
+      res.send(editedComment)
+    }
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+})
+
 export default router

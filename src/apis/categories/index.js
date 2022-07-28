@@ -38,5 +38,22 @@ router.post('/', async (req, res, next) => {
     next(error)
   }
 })
+router.put('/:id', async (req, res, next) => {
+  try {
+    const updatedCategory = await CategoriesModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    )
+    if (!updatedCategory) {
+      next(createHttpError(404, 'Category not found!'))
+    } else {
+      res.send(updatedCategory)
+    }
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+})
 
 export default router

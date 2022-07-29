@@ -10,6 +10,10 @@ import commentsRouter from './apis/comments/index.js'
 import cors from 'cors'
 import listEndpoints from 'express-list-endpoints'
 
+import connectionHandler from './socket/index.js'
+import { Server } from 'socket.io'
+import { createServer } from 'http'
+
 import {
   badRequestHandler,
   forbiddenHandler,
@@ -21,6 +25,8 @@ import {
 const port = process.env.PORT || 5001
 
 const server = express()
+
+const httpServer = createServer(server)
 
 server.use(cors())
 server.use(express.json())
@@ -36,6 +42,12 @@ server.use(forbiddenHandler)
 server.use(unauthorizedHandler)
 server.use(notFoundHandler)
 server.use(genericHandler)
+
+const io = new Server(httpServer)
+io.on('connection', connectionHandler)
+// io.on('connection', () => {
+//   console.log('connected finally')
+// })
 
 // connect to mongo
 mongoose.connect(process.env.MONGO_CONNECTION_URL)

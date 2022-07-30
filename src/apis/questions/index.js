@@ -40,9 +40,13 @@ router.get('/categories/:name', async (req, res, next) => {
     const questions = await QuestionsModel.find({ category: req.params.name }).populate({
       path: 'author'
     })
+
     if (questions.length === 0) {
       next(createHttpError(404, 'Category might not exist'))
     } else {
+      questions.sort(function (a, b) {
+        return b.likes - a.likes
+      })
       res.send(questions)
     }
   } catch (error) {

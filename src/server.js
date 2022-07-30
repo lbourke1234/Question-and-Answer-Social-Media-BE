@@ -45,8 +45,9 @@ server.use(genericHandler)
 
 const io = new Server(httpServer)
 io.on('connection', connectionHandler)
-// io.on('connection', () => {
-//   console.log('connected finally')
+// io.on('connection', (socket) => {
+//   socket.emit('welcome', { message: `Hello ${socket.id}!` })
+//   console.log('Connection established')
 // })
 
 // connect to mongo
@@ -56,5 +57,6 @@ mongoose.connection.on('connected', () => {
   console.log('Connected to Mongo!')
   server.listen(port, () => {
     console.table(listEndpoints(server))
+    console.log(`Server running on port ${port}`)
   })
 })

@@ -74,7 +74,7 @@ router.get('/:id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const newQuestion = new QuestionsModel(req.body)
-    const savedQ = await newQuestion.save()
+    const savedQ = await (await newQuestion.save()).populate({ path: 'author' })
     res.send(savedQ)
   } catch (error) {
     console.log(error)

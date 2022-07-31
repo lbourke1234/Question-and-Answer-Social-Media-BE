@@ -5,6 +5,9 @@ const connectionHandler = (socket) => {
   socket.emit('welcome', { message: `Hello ${socket.id}!` })
 
   // FE is emitting setUsername event --> BE should listen for that
+  socket.on('connect_error', (err) => {
+    console.log(`connect_error due to ${err.message}`)
+  })
 
   socket.on('setUsername', (payload) => {
     // When a new client connects to the chat and sets a username, BE should keep track of that socketId & username

@@ -16,7 +16,9 @@ router.get('/', async (req, res, next) => {
 })
 router.get('/post/:id', async (req, res, next) => {
   try {
-    const comments = await CommentsModel.find({ post: req.params.id })
+    const comments = await CommentsModel.find({ post: req.params.id }).populate({
+      path: 'author'
+    })
     if (!comments) {
       next(createHttpError(404, 'Post does not exist!'))
     } else {
@@ -46,7 +48,7 @@ router.get('/:commentId', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const newComment = new CommentsModel(req.body)
-    const savedComment = await newComment.save()
+    const savedComment = await (await newComment.save()).populate({ path: 'author' })
     res.status(201).send(savedComment)
   } catch (error) {
     console.log(error)

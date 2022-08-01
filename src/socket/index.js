@@ -3,6 +3,8 @@ import MessageModel from '../apis/messages/model.js'
 
 let onlineUsers = []
 
+// let chatHistory = []
+
 const connectionHandler = (socket) => {
   console.log('connection established!')
   socket.emit('welcome', { message: `Hello ${socket.id}!` })
@@ -24,7 +26,7 @@ const connectionHandler = (socket) => {
       { new: true, runValidators: true }
     )
 
-    console.log('ONLINE USERS: ', onlineUsers)
+    // console.log('ONLINE USERS: ', onlineUsers)
 
     socket.join(payload.room)
 
@@ -35,14 +37,30 @@ const connectionHandler = (socket) => {
     socket.broadcast.emit('newConnection', onlineUsers)
   })
 
-  socket.on('sendMessage', async ({ text, room, senderId, senderName }) => {
+  socket.on('sendMessage', async ({ text, catName, profileId, profileName }) => {
     try {
-      const newMessage = new MessageModel({ text, room, sender: senderId })
+      // console.log('payload', payload)
+      // console.log('name', name)
+      console.log('text', text)
+      console.log('room', catName)
+      console.log('sender', profileId)
+      console.log('senderName', profileName)
+      const newMessage = new MessageModel({
+        text,
+        room: catName,
+        sender: profileId,
+        senderName: profileName
+      })
+      const savedMessage = await newMessage.save()
+      // console.log('newMessage', savedMessage)
+      // console.log('senderName', senderName)
+
+      // console.log('chat history before emitting message', chatHistory)
+      console.log('before emitting message')
+      socket.to(catName).emit('message', { text, profileName, catName, savedMessage })
     } catch (error) {
       console.log(error)
     }
-
-    socket.to(room).emit('message', { text, senderName })
   })
 
   socket.on('disconnect', () => {

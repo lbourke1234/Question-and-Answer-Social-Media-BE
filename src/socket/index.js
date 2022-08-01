@@ -1,7 +1,7 @@
 import UserModel from '../apis/users/model.js'
 import MessageModel from '../apis/messages/model.js'
 
-const onlineUsers = []
+let onlineUsers = []
 
 const connectionHandler = (socket) => {
   console.log('connection established!')
@@ -35,14 +35,14 @@ const connectionHandler = (socket) => {
     socket.broadcast.emit('newConnection', onlineUsers)
   })
 
-  socket.on('sendmessage', async ({ message, room }) => {
+  socket.on('sendMessage', async ({ text, room, senderId, senderName }) => {
     try {
-      const newMessage = new MessageModel({ text: message, room })
+      const newMessage = new MessageModel({ text, room, sender: senderId })
     } catch (error) {
       console.log(error)
     }
 
-    socket.to(room).emit('message', message)
+    socket.to(room).emit('message', { text, senderName })
   })
 
   socket.on('disconnect', () => {

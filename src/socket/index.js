@@ -26,7 +26,7 @@ const connectionHandler = (socket) => {
 
     socket.join(payload.room)
 
-    console.log('ROOMS ', socket.rooms)
+    console.log('ROOM ', payload.room)
 
     socket.emit('loggedin', onlineUsers)
 
@@ -41,6 +41,7 @@ const connectionHandler = (socket) => {
         sender: profileId,
         senderName: profileName
       })
+      console.log('in the on.sendMessage now')
       const savedMessage = await newMessage.save()
       socket.to(catName).emit('message', { text, profileName, catName, savedMessage })
     } catch (error) {

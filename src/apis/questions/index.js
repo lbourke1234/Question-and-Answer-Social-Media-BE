@@ -55,6 +55,21 @@ router.get('/categories/:name', async (req, res, next) => {
   }
 })
 
+router.get('/user/:userId', async (req, res, next) => {
+  try {
+    const questions = await QuestionsModel.find({ author: req.params.userId }).populate({
+      path: 'author'
+    })
+    if (!questions) {
+      next(createHttpError(404, 'Posts not found!'))
+    } else {
+      res.send(questions)
+    }
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+})
 router.get('/:id', async (req, res, next) => {
   try {
     const question = await QuestionsModel.findById(req.params.id).populate({
